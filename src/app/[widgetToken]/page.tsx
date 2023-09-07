@@ -18,5 +18,5 @@ export default async function WidgetPage({
     return <WidgetNotFound />;
   }
 
-  return <WidgetRenderer widget={widget} />;
+  return <WidgetRenderer token={params.widgetToken} widget={widget} />;
 }
