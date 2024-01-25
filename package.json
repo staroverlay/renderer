@@ -1,23 +1,18 @@
 {
-  "name": "renderer",
-  "version": "0.1.0",
+  "name": "@staroverlay/renderer",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "dev": "next dev --port 3200",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "vite": "^5.0.8"
   },
   "dependencies": {
-    "@types/node": "20.5.9",
-    "@types/react": "18.2.21",
-    "@types/react-dom": "18.2.7",
-    "eslint": "8.48.0",
-    "eslint-config-next": "13.4.19",
-    "next": "13.4.19",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "socket.io-client": "^4.7.2",
-    "typescript": "5.2.2"
+    "socket.io-client": "^4.7.4"
   }
 }
