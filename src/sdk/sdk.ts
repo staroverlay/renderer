@@ -1,4 +1,5 @@
 import { Socket } from "socket.io-client";
+import { getBackendURL } from "../app/env";
 import Template from "../app/interfaces/template";
 import Widget from "../app/interfaces/widget";
 import EventEmitter from "./event-emitter";
@@ -32,5 +33,16 @@ export default class SDK extends EventEmitter {
     }
 
     this.on("event:" + topic, listener);
+  }
+
+  async getMedia(mediaID: string) {
+    const media = await fetch(getBackendURL() + "/media/" + mediaID);
+    const data = await media.json();
+
+    if (data.error) {
+      throw new Error(data.error);
+    }
+
+    return data;
   }
 }
