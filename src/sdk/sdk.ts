@@ -1,6 +1,7 @@
 import { Socket } from "socket.io-client";
 import { getBackendURL } from "../app/env";
 import Template from "../app/interfaces/template";
+import Version from "../app/interfaces/version";
 import Widget from "../app/interfaces/widget";
 import EventEmitter from "./event-emitter";
 
@@ -10,6 +11,7 @@ export default class SDK extends EventEmitter {
   public connected: boolean;
   public widget: Widget | null;
   public template: Template | null;
+  public version: Version | null;
   public settings: { [key in string]: any };
   public topics: Set<string>;
 
@@ -19,6 +21,7 @@ export default class SDK extends EventEmitter {
     this.connected = false;
     this.widget = null;
     this.template = null;
+    this.version = null;
     this.settings = {};
     this.topics = new Set();
   }

@@ -1,10 +1,11 @@
-import Template from "./template";
-
 export default interface Widget {
   _id: string;
+  autoUpdate: boolean;
   displayName: string;
+  enabled: boolean;
   service: "twitch";
-  settings: { [key in string]: any };
-  template: Template;
-  userId: string;
+  scopes: string[];
+  settings: any;
+  templateId: string;
+  templateVersion: string;
 }
