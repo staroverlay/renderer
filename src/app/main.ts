@@ -15,6 +15,7 @@ const socket = io(getBackendURL(), {
 
 // Initialize SDK.
 window.StarOverlay = new SDK(socket);
+window.process = window.StarOverlay.process;
 
 // Authenticate.
 const token = location.pathname.replace("/", "");
@@ -47,7 +48,7 @@ socket.on(
     sdk.template = template;
     sdk.version = version;
     sdk.settings = widget.settings;
-    injectContent("#app", version.html);
+    renderHTML(version.html);
 
     if (sdk.topics.size != 0) {
       const topics: string[] = [];
@@ -70,3 +71,19 @@ socket.on("event", ({ data, topic }: Event) => {
   sdk.emit("event:" + topic, data);
   sdk.emit("event", { data, topic });
 });
+
+// Render attributes.
+function renderIf(attribName: string, value: string) {
+  const query = `[${attribName}="${value}"]`;
+  const elms = document.querySelectorAll<HTMLElement>(query);
+  for (const elm of elms) {
+    elm.style.display = "inherit";
+  }
+}
+
+function renderHTML(html: string) {
+  injectContent("#app", html);
+
+  renderIf("if-so-env", window.process.env.SO_ENV);
+  renderIf("if-node-env", window.process.env.NODE_ENV);
+}

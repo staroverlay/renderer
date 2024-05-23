@@ -13,6 +13,15 @@ body {
   height: 100%;
 }
 
+/* Utils */
+[if-so-env] {
+  display: none;
+}
+
+[if-node-env] {
+  display: none;
+}
+
 /* Popup */
 .popup {
   position: absolute;

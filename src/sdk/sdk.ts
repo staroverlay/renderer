@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { getBackendURL } from "../app/env";
+import { Process, getWorkerURL, process } from "../app/env";
 import Template from "../app/interfaces/template";
 import Version from "../app/interfaces/version";
 import Widget from "../app/interfaces/widget";
@@ -14,6 +14,7 @@ export default class SDK extends EventEmitter {
   public version: Version | null;
   public settings: { [key in string]: any };
   public topics: Set<string>;
+  public process: Process;
 
   constructor(socket: Socket) {
     super();
@@ -24,6 +25,7 @@ export default class SDK extends EventEmitter {
     this.version = null;
     this.settings = {};
     this.topics = new Set();
+    this.process = process;
   }
 
   subscribeTopic(topic: string, listener: () => unknown) {
@@ -38,14 +40,8 @@ export default class SDK extends EventEmitter {
     this.on("event:" + topic, listener);
   }
 
-  async getMedia(mediaID: string) {
-    const media = await fetch(getBackendURL() + "/media/" + mediaID);
-    const data = await media.json();
-
-    if (data.error) {
-      throw new Error(data.error);
-    }
-
-    return data;
+  getMedia(mediaID: string) {
+    const cdn = getWorkerURL();
+    return `${cdn}/${mediaID}`;
   }
 }
