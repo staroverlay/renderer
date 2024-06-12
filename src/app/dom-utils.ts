@@ -48,3 +48,11 @@ export function injectContent(q: string, content: string) {
     }
   }
 }
+
+export function renderIf(attribName: string, value: string) {
+  const query = `[${attribName}="${value}"]`;
+  const elms = document.querySelectorAll<HTMLElement>(query);
+  for (const elm of elms) {
+    elm.style.display = "inherit";
+  }
+}

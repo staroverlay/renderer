@@ -27,14 +27,21 @@ if (hostname === "localhost" || hostname === "127.0.0.1") {
 }
 
 // Process SO_ENV.
+function inIframe() {
+  try {
+    return window.self !== window.top;
+  } catch (e) {
+    return true;
+  }
+}
+
 const ua = navigator.userAgent?.toLowerCase() || "unknown?";
 const apps = ["unknown?", "obs"];
-const isIframe = window.frameElement !== null;
 const isStreaming = apps.find((name) => ua.includes(name)) !== undefined;
 
 if (isStreaming) {
   process.env.SO_ENV = "streaming";
-} else if (isIframe) {
+} else if (inIframe()) {
   process.env.SO_ENV = "preview";
 } else {
   process.env.SO_ENV = "browser";

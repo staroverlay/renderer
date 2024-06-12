@@ -1,7 +1,7 @@
 import io from "socket.io-client";
 
 import SDK from "../sdk/sdk";
-import { injectContent, spawnPopup } from "./dom-utils";
+import { spawnPopup } from "./dom-utils";
 import { getBackendURL } from "./env";
 import { getError } from "./errors";
 import Template from "./interfaces/template";
@@ -48,7 +48,11 @@ socket.on(
     sdk.template = template;
     sdk.version = version;
     sdk.settings = widget.settings;
-    renderHTML(version.html);
+    sdk.html = version.html;
+
+    if (widget.enabled || window.process.env.SO_ENV === "preview") {
+      sdk.render();
+    }
 
     if (sdk.topics.size != 0) {
       const topics: string[] = [];
@@ -59,6 +63,8 @@ socket.on(
     }
 
     sdk.connected = true;
+    sdk.logC("Sdk", "Connected to server.");
+    sdk.logC("Sdk", "Logged as widget:", widget._id);
   }
 );
 
@@ -68,22 +74,33 @@ type Event = { data: any; topic: string };
 socket.on("event", ({ data, topic }: Event) => {
   const sdk = window.StarOverlay;
 
-  sdk.emit("event:" + topic, data);
-  sdk.emit("event", { data, topic });
-});
-
-// Render attributes.
-function renderIf(attribName: string, value: string) {
-  const query = `[${attribName}="${value}"]`;
-  const elms = document.querySelectorAll<HTMLElement>(query);
-  for (const elm of elms) {
-    elm.style.display = "inherit";
+  if (sdk.enabled) {
+    sdk.emit("event:" + topic, data);
+    sdk.emit("event", { data, topic });
   }
-}
 
-function renderHTML(html: string) {
-  injectContent("#app", html);
+  if (topic == "settings:update") {
+    const old = sdk.settings;
+    sdk.settings = data;
+    sdk.emit("settings-updated", {
+      oldSettings: old,
+      newSettings: data,
+    });
+    sdk.logC("Sdk", "Settings updated:", old, data);
+  }
 
-  renderIf("if-so-env", window.process.env.SO_ENV);
-  renderIf("if-node-env", window.process.env.NODE_ENV);
-}
+  if (topic == "settings:toggle") {
+    const toggle = data as boolean;
+    sdk.logC("Sdk", "Widget toggled:", toggle ? "enabled" : "disabled");
+    sdk.emit("settings-toggle", toggle);
+    sdk.enabled = toggle;
+
+    if (window.process.env.SO_ENV !== "preview") {
+      if (toggle) {
+        sdk.render();
+      } else {
+        sdk.clear();
+      }
+    }
+  }
+});
